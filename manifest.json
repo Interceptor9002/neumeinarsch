@@ -1,0 +1,14 @@
+{
+  "name": "RollerKey Ultra",
+  "short_name": "RollerKey",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#07090d",
+  "theme_color": "#07090d",
+  "lang": "de",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RollerKey">
+<meta name="theme-color" content="#07090d">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>RollerKey Ultra</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#07090d;--pan:#101620;--lin:#232c3a;--txt:#e9eef6;--dim:#8b97a8;--grn:#3ee08a;--gld:#e8c56a;--red:#ff6b6b;--sb:env(safe-area-inset-bottom,0px)}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--txt);font:15px/1.45 ui-monospace,Menlo,monospace;display:flex;flex-direction:column;overflow:hidden;touch-action:manipulation}
+header{padding:calc(env(safe-area-inset-top,0px) + 12px) 14px 10px;border-bottom:1px solid var(--lin)}
+h1{font-size:15px;margin:0;letter-spacing:2px;color:var(--grn)}
+h1 span{color:var(--gld)}
+#status{font-size:12px;color:var(--dim);margin-top:3px;min-height:16px}
+#status.ok{color:var(--grn)}#status.warn{color:var(--gld)}#status.err{color:var(--red)}
+main{flex:1;overflow-y:auto;padding:12px 12px calc(24px + var(--sb))}
+.pan{background:var(--pan);border:1px solid var(--lin);border-radius:12px;padding:11px;margin-bottom:10px}
+h2{font-size:11px;letter-spacing:1.5px;color:var(--dim);margin:0 0 8px}
+button{font:inherit;font-size:13px;border:1px solid var(--lin);background:#161e2a;color:var(--txt);border-radius:9px;padding:11px;width:100%}
+button:active{background:#1f2a39}
+button.grn{background:var(--grn);color:#04180c;border-color:var(--grn);font-weight:700}
+button.gld{background:var(--gld);color:#1a1405;border-color:var(--gld);font-weight:700}
+button.red{color:var(--red);border-color:#4a2626}
+.rot{display:flex;gap:6px;margin-bottom:9px}
+.rot button{padding:9px 4px;font-size:12px}
+.rot button.on{background:var(--gld);color:#1a1405;border-color:var(--gld);font-weight:700}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.breit{grid-column:1 / -1}
+.kopf{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.kopf b{font-size:12px;letter-spacing:1px;color:var(--gld)}
+.amp{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--dim);margin:4px 0}
+.dot{width:9px;height:9px;border-radius:50%;background:#2a3444;flex:0 0 auto}
+.dot.g{background:var(--grn)}.dot.y{background:var(--gld)}.dot.r{background:var(--red)}
+.cock{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center}
+.cock div{background:#0c121b;border:1px solid var(--lin);border-radius:9px;padding:7px}
+.cock small{display:block;font-size:10px;color:var(--dim)}
+.cock b{font-size:16px;color:var(--grn)}
+.karte{background:linear-gradient(135deg,#1b2433,#0d131c);border:1px solid #33405a;border-radius:12px;padding:11px;font-size:12px;color:var(--dim);margin-bottom:8px}
+.karte .nr{font-size:15px;color:var(--txt);letter-spacing:1.5px;margin:5px 0}
+.karte .zeile{display:flex;justify-content:space-between;gap:8px}
+.karte .zeile b{color:var(--gld)}
+input{width:100%;font:inherit;font-size:13px;background:#0c121b;color:var(--txt);border:1px solid var(--lin);border-radius:9px;padding:10px;margin-bottom:7px}
+input::placeholder{color:#5b6779}
+#log{background:#05080c;border:1px solid var(--lin);border-radius:9px;padding:8px;height:150px;overflow-y:auto;font-size:11px;line-height:1.4;color:var(--dim);white-space:pre-wrap;word-break:break-word}
+#log .g{color:var(--grn)}#log .y{color:var(--gld)}#log .e{color:var(--red)}
+#cam{width:100%;border-radius:9px;background:#000;display:none;margin-bottom:7px}
+details{border:1px solid var(--lin);border-radius:9px;padding:9px;margin-bottom:10px}
+summary{font-size:11px;letter-spacing:1px;color:var(--dim);cursor:pointer}
+details[open] summary{margin-bottom:8px}
+details .pan{background:transparent;border:0;padding:0;margin:0}
+</style>
+</head>
+<body>
+<header>
+  <h1>ROLLERKEY <span>ULTRA</span></h1>
+  <div id="status">Bereit.</div>
+</header>
+<main>
+  <div class="rot">
+    <button data-b="lime" class="on">LIME</button>
+    <button data-b="voi">VOI</button>
+    <button data-b="bolt">BOLT</button>
+    <button data-b="dott">DOTT</button>
+  </div>
+
+  <div class="pan">
+    <div class="cock">
+      <div><small>AKKU</small><b id="vAkku">–</b></div>
+      <div><small>ZEIT</small><b id="vZeit">–</b></div>
+      <div><small>KOSTEN</small><b id="vFam">–</b></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <button id="bVerb" class="grn breit">VERBINDEN</button>
+    <button id="bAuf" class="gld">ENTSPERREN</button>
+    <button id="bZu">SPERREN</button>
+    <button id="bQr" class="breit">QR-CODE SCANNEN</button>
+  </div>
+  <video id="cam" playsinline muted></video>
+
+  <div class="pan" style="margin-top:10px">
+    <div class="kopf"><b>AUTOMATIK</b><button id="bAuto" style="width:auto;padding:6px 12px;font-size:11px">AUS</button></div>
+    <div style="font-size:11px;color:var(--dim)">Konto, Karte, Vorlage, Verbindung und Entsperren in einem Zug. Ein Tipp auf ENTSPERREN genügt.</div>
+  </div>
+
+  <div class="pan">
+    <div class="kopf"><b>KONTO</b><span id="cMail" style="font-size:11px;color:var(--dim)">–</span></div>
+    <div class="amp"><span class="dot" id="vDef"></span>Zahlungsmittel hinterlegt</div>
+    <div class="amp"><span class="dot" id="vStd"></span>Standard gesetzt</div>
+    <div class="amp"><span class="dot" id="vWal"></span>Guthaben gelesen</div>
+    <div class="amp"><span class="dot" id="vBlock"></span>nicht gesperrt</div>
+    <div class="grid" style="margin-top:8px">
+      <button id="bNew">NEUES KONTO</button>
+      <button id="bLogin">ANMELDEN</button>
+      <button id="bBal">GUTHABEN</button>
+      <button id="bDef">VORLEGEN</button>
+      <button id="bKarte" class="breit">NUR KARTE</button>
+    </div>
+  </div>
+
+  <div class="pan">
+    <div class="kopf"><b>KARTE</b><span id="cStat" style="font-size:11px"></span></div>
+    <div class="karte">
+      <div class="zeile"><span id="kMarke">–</span><b id="kBetrag">5,00 €</b></div>
+      <div class="nr" id="kNum">•••• •••• •••• ••••</div>
+      <div class="zeile"><span id="kName">–</span><span id="kExp">–</span><span id="kCvc">–</span></div>
+    </div>
+    <div class="rot" id="marken">
+      <button data-m="visa" class="on">VISA</button>
+      <button data-m="master">MASTERCARD</button>
+    </div>
+    <input id="iBetrag" inputmode="decimal" placeholder="Betrag in €">
+    <div class="rot" id="betraege">
+      <button data-c="500">5 €</button>
+      <button data-c="1000">10 €</button>
+      <button data-c="2000">20 €</button>
+      <button data-c="5000">50 €</button>
+    </div>
+    <div class="grid">
+      <button id="bRoll" class="breit">NEUE KARTE</button>
+      <button id="bAb" class="gld breit">ABTIPPEN</button>
+      <button id="bUeber">ÜBERNEHMEN</button>
+      <button id="bLad" class="gld">AUFLADEN</button>
+      <button id="bWeg" class="red breit">ENTFERNEN</button>
+    </div>
+  </div>
+
+  <details>
+    <summary>FEINSCHLIFF UND TEST</summary>
+    <div class="pan">
+      <input id="iRelay" placeholder="Relay-Adresse">
+      <button id="bRelay" style="margin-bottom:7px">RELAY SPEICHERN</button>
+      <input id="iBin" placeholder="BIN (leer = Zufall)">
+      <button id="bBin" style="margin-bottom:7px">BIN SPEICHERN</button>
+      <input id="iAt" placeholder="Passwort (Serie: OKAIYLBT)">
+      <button id="bAt" style="margin-bottom:7px">PASSWORT PRÜFEN</button>
+      <input id="iRaw" placeholder="Rohbefehl (Hex oder ASCII)">
+      <button id="bRaw" style="margin-bottom:7px">ROH SENDEN</button>
+      <button id="bShot" style="margin-bottom:7px">ALLES DURCHPROBIEREN</button>
+      <button id="bNet" style="margin-bottom:7px">NETZ PRÜFEN</button>
+      <button id="bReset" class="red">ZURÜCKSETZEN</button>
+    </div>
+  </details>
+
+  <div class="pan"><h2>KONSOLE</h2><div id="log"></div></div>
+</main>
+<script src="app.js?v=7"></script>
+</body>
+</html>
